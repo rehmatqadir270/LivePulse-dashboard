@@ -1,0 +1,52 @@
+[
+    {
+        "id": "1",
+        "topic": "Next.js 15 Release",
+        "votes": 1420
+    },
+    {
+        "id": "2",
+        "topic": "React Server Components",
+        "votes": 1380
+    },
+    {
+        "id": "3",
+        "topic": "TypeScript 5.5",
+        "votes": 1195
+    },
+    {
+        "id": "4",
+        "topic": "Tailwind CSS v4",
+        "votes": 1100
+    },
+    {
+        "id": "5",
+        "topic": "Bun Runtime Adoption",
+        "votes": 980
+    },
+    {
+        "id": "6",
+        "topic": "Vercel AI SDK",
+        "votes": 875
+    },
+    {
+        "id": "7",
+        "topic": "Turbopack Stable",
+        "votes": 810
+    },
+    {
+        "id": "8",
+        "topic": "React 19 useOptimistic",
+        "votes": 760
+    },
+    {
+        "id": "9",
+        "topic": "Edge Runtime Performance",
+        "votes": 695
+    },
+    {
+        "id": "10",
+        "topic": "Zustand vs Redux Toolkit",
+        "votes": 640
+    }
+]
