@@ -81,13 +81,25 @@ updated.sort((a, b) => b.votes - a.votes)
 
 ## Key Design Decisions
 
-| Decision | Rationale | Alternative |
-|----------|-----------|-------------|
-| Server component for initial data | Fast load, SEO friendly | Full client-side fetch slower |
-| SSE over WebSockets | Simpler for one-way data | WebSocket overhead unnecessary |
-| Optimistic updates for votes | Low-risk operations | Wait for server confirmation = perceived lag |
-| Exponential backoff reconnection | Prevents reconnection storms | Fixed delay or immediate retry damages server |
-| Vote validation only (no persistence) | Sufficient for assessment | DB persistence adds scope |
+**Server Component for Initial Data**
+- Rationale: Fast page load, SEO-friendly HTML, immediate content visibility
+- Alternative: Full client-side fetch adds latency and extra API call
+
+**SSE over WebSockets**
+- Rationale: Simpler protocol for one-way server-to-client communication, native browser support, works through proxies
+- Alternative: WebSockets add overhead and complexity for this use case
+
+**Optimistic Updates for Votes**
+- Rationale: Low-risk operations (simple increment), instant user feedback, zero perceived latency
+- Alternative: Waiting for server confirmation creates perceived lag and poor UX
+
+**Exponential Backoff Reconnection**
+- Rationale: Prevents connection storms during outages, adapts to server recovery time, transparent to user
+- Alternative: Fixed delay or immediate retry hammers server and increases load during failures
+
+**Vote Validation Only (No Persistence)**
+- Rationale: Sufficient for assessment scope, demonstrates validation patterns
+- Alternative: Database persistence adds significant implementation scope
 
 ## Error Handling
 

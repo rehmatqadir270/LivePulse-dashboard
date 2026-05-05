@@ -148,6 +148,62 @@ Votes are submitted via Server Action with:
 - `npm run build` - Build for production
 - `npm start` - Start production server
 - `npm run lint` - Run ESLint
+
+## Common Questions & Implementation Answers
+
+### Q1: How do you handle serverless timeout constraints with SSE?
+
+**Answer**: For this assessment, we use **Server-Sent Events (SSE) with ReadableStream** which works indefinitely on Vercel's Edge Runtime (supports streaming connections). This avoids traditional serverless timeout issues altogether.
+
+**For Production at Scale**: When deployed on traditional serverless platforms (AWS Lambda, Google Cloud Functions with 15-min timeout), SSE long-lived connections become problematic. Production solutions include:
+
+- **Pusher**: Managed real-time service handling all persistent connections, we publish trends server-side
+- **Ably**: Similar to Pusher, handles connection management, fallback protocols (WebSocket, polling)
+- **Pub/Sub Models**: Redis pub/sub, AWS SNS/SQS for message broadcasting across serverless functions
+- **Apache Kafka**: High-throughput event streaming for massive scale, multiple consumer groups
+- **Dedicated Server**: Deploy on traditional server (Heroku, railway.app) for unlimited connections
+- **Edge Runtime**: Vercel, Cloudflare Workers support streaming (current approach)
+
+**Current Implementation**: Deployed on Next.js Edge Runtime which supports indefinite streaming, eliminating timeout concerns for the assessment.
+
+### Q2: How do you solve the hydration puzzle between server and client rendering?
+
+**Answer**: The key is ensuring server-rendered HTML exactly matches client hydration:
+
+- Server reads `data/trends.json` and renders 10 initial trends synchronously
+- Passes `initialTrends` as JSON prop to client component
+- Client `useState` initializes with same data (no mismatch)
+- After hydration, client connects to EventSource for live updates
+- Use `suppressHydrationWarning` on dynamic attributes (connection status indicator)
+
+**Implementation**: `app/page.tsx` reads seed data server-side, `TrendsLiveSync.tsx` receives it as prop and initializes useState, preventing hydration mismatches.
+
+### Q3: How would you scale this to 100k+ concurrent users?
+
+**Answer**: Current architecture supports scaling through:
+
+- **Load Balancing**: Multiple server instances behind load balancer (each server handles independent SSE streams)
+- **Trend Synchronization**: Redis pub/sub broadcasts trends across all servers so clients receive same data regardless of which server they connect to
+- **Database**: Replace in-memory trends with MongoDB/PostgreSQL for persistence and vote aggregation
+- **Caching**: Edge cache initial trends at CDN level, invalidate on new trends
+- **Rate Limiting**: Implement per-user vote rate limits to prevent spam
+- **Monitoring**: Track connection count, trend generation latency, vote submission times
+
+**Current Limitation**: Single instance, in-memory trends. Production would require above scaling patterns.
+
+### Q4: What accessibility considerations have been implemented?
+
+**Answer**: The application includes comprehensive accessibility features:
+
+- **ARIA Live Regions**: `aria-live="polite"` announces connection status changes to screen readers
+- **Semantic HTML**: Form elements, proper button semantics, no divs as buttons
+- **Labeling**: Every interactive element has `aria-label` (votes, voting button)
+- **Screen Reader Friendly**: Status updates appear in hidden `sr-only` div
+- **Color Contrast**: Dark slate-900 background with light slate-100 text meets WCAG AA standards
+- **Keyboard Navigation**: All buttons and forms fully keyboard accessible
+- **Skip Links**: Recommended pattern for long trend lists
+
+**Implementation**: Accessible throughout `TrendsLiveSync.tsx` and `TrendRow` component with proper ARIA attributes and semantic markup.
 - `npm run type-check` - Run TypeScript type checking
 
 ## License
