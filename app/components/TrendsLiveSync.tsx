@@ -149,14 +149,7 @@ export function TrendsLiveSync({ initialTrends }: TrendsLiveSyncProps) {
             }, 15000);
             return newSet;
           });
-          return updated.sort((a, b) => {
-            const aIsNew = newTrendIds.has(a.id);
-            const bIsNew = newTrendIds.has(b.id);
-            if (aIsNew !== bIsNew) {
-              return aIsNew ? -1 : 1;
-            }
-            return b.votes - a.votes;
-          });
+          return updated.sort((a, b) => b.votes - a.votes);
         });
       } catch (error) {
         console.error("Failed to parse trend:", error);
